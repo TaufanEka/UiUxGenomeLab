@@ -1,0 +1,6 @@
+@UiUxGenomeLab_HostAddress = http://localhost:5043
+
+GET {{UiUxGenomeLab_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
