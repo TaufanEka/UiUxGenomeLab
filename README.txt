@@ -1,7 +1,7 @@
 
 # UiUxGenomeLab
 
-Just to keep my inspired wording, will keep it in this as the original README.txt file, so that the actual README.md can evolve without forgetting how we got here, a human brain and not an AI brain. Lol.
+Just to keep my inspired wording, will keep this as the original README.txt file, so that the actual README.md can evolve without forgetting how we got here, a human brain and not an AI brain. Lol.
 
 Research as a service, the next steps of studying as you would have, except output the answer as a best fit result. Search 2.0. Starting with a UIUX POC to define this tool, as I would have already be using this for. Everyone may contribute, and eventually, it will take more than just myself alone to complete this service. Let's make it happen!
 
