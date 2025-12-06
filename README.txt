@@ -179,23 +179,37 @@ Research bundle output: research-bundle.json + index.html + one HTML per candida
 References:
 Let's start listing everything useful here.
 
-https://openai.com/
+-   https://openai.com/
 
-https://github.com/openai/openai-dotnet
+-   https://github.com/openai/openai-dotnet
 
-https://github.com/openai/openai-dotnet?tab=readme-ov-file#how-to-use-responses-with-web-search
+-   https://github.com/openai/openai-dotnet?tab=readme-ov-file#how-to-use-responses-with-web-search
 
-https://www.nuget.org/packages/OpenAI
+-   https://www.nuget.org/packages/OpenAI
 
-https://chatgpt.com/
+-   https://chatgpt.com/
 
-https://github.com/openai/openai-dotnet/blob/main/docs/Observability.md
+-   https://github.com/openai/openai-dotnet/blob/main/docs/Observability.md
 
-https://www.postman.com/
+-   https://www.postman.com/
 
-https://copilot.microsoft.com/
+-   https://copilot.microsoft.com/
 
-https://support.google.com/websearch/thread/135474043/how-do-i-get-web-search-results-using-an-api?hl=en
+-   https://support.google.com/websearch/thread/135474043/how-do-i-get-web-search-results-using-an-api
 
-https://developers.google.com/custom-search/v1/overview
+-   https://developers.google.com/custom-search/v1/overview
+
+-   https://www.section508.gov/
+
+-   https://www.w3.org/
+
+-   https://www.wcag.com/
+
+-   https://www.ada.gov/
+
+-   https://www.section508.gov/develop/applicability-conformance
+
+-   https://www.w3.org/WAI/standards-guidelines/wcag/
+
+-   https://www.ada.gov/resources/web-guidance/
 
