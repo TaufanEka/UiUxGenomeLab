@@ -18,7 +18,7 @@ single developer can complete alone.
 -   [High-Level Architecture](#high-level-architecture)
 -   [Technical Components](#technical-components)
 -   [How It Meets the Goals](#how-it-meets-the-goals)
--   [Theory How AI will be used to automatically translate ANY website into a 508 WCAG compliant](#how-it-meets-the-goals-508-WCAG-ADA)
+-   [How It Meets the Goals 508 WCAG ADA](#how-it-meets-the-goals-508-wcag-ada)
 -   [References](#references)
 
 ------------------------------------------------------------------------
@@ -181,10 +181,11 @@ structure, and design tokens.
 
 ------------------------------------------------------------------------
 
-## Theory How AI will be used to automatically translate ANY website into a 508 WCAG compliant
-- Theory How AI is used to automatically translate any website into a 508 compliant and or WCAG A-AAA that meets any set user preference of ADA requirement, then eventually expand beyond just compliance to meet even more ADA need. 
+## How It Meets the Goals 508 WCAG ADA
+- Theory How AI will be used to automatically translate ANY website into a 508 WCAG Compliance A-AAA
+- How AI morphs to meet any user preference(s)0 of ADA requirement, then eventually expand beyond just compliance to meet even more ADA need. 
 - Overall, supporting as many users as possible with the same full user experience, using AI behind the scenes to translate any website into a fully compliant output. AKA deliver a translation per user, per AI translating to meet user set preference(s).
-- How-it-meets-the-goals-508-WCAG-ADA-overall-compliance-adapting-to-any-user-preference.
+- Meeting the goals 508 WCAG ADA overall compliance using AI to morph the website into a full delivery, same as non ADA, through adapting to any user preference.
 - The logic of meeting full 508 compliance.
 - The logic of meeting full WCAG to AAA ratios.
 - The logic of supporting the largest ADA audience possible, aka as many users as possible, first focusing on the law. Then research expanding to meet further ADA need.
