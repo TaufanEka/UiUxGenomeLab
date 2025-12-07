@@ -1,0 +1,47 @@
+# Labeler configuration for auto-labeling PRs
+# See https://github.com/actions/labeler for configuration details
+
+# Documentation
+documentation:
+  - changed-files:
+    - any-glob-to-any-file: ['docs/**', '*.md', '.github/**/*.md']
+
+# CI/CD and workflows
+ci-cd:
+  - changed-files:
+    - any-glob-to-any-file: ['.github/workflows/**']
+
+# Dependencies
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file: ['*.csproj', 'packages.lock.json', 'Directory.Build.props']
+
+# Services
+services:
+  - changed-files:
+    - any-glob-to-any-file: ['Services/**']
+
+# Domain
+domain:
+  - changed-files:
+    - any-glob-to-any-file: ['Domain/**']
+
+# Background jobs
+background:
+  - changed-files:
+    - any-glob-to-any-file: ['Background/**']
+
+# Configuration
+config:
+  - changed-files:
+    - any-glob-to-any-file: ['appsettings*.json', '*.config', '.editorconfig']
+
+# Tests
+tests:
+  - changed-files:
+    - any-glob-to-any-file: ['**/*Tests/**', '**/*.Tests/**', '**/*Test.cs', '**/*.Test.cs']
+
+# Security
+security:
+  - changed-files:
+    - any-glob-to-any-file: ['.github/workflows/codeql.yml', '.github/workflows/dependency-review.yml']
