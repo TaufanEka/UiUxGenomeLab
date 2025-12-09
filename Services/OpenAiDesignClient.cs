@@ -1,25 +1,18 @@
-﻿using OpenAI;
-using OpenAI.Responses;
+﻿using System.Text.Json;
 using UiUxGenomeLab.Domain;
 
 namespace UiUxGenomeLab.Services;
 
-//Use the Responses API with web_search where needed.
+// Use the local HTTP wrapper to call OpenAI Responses API so code compiles reliably with the installed package.
 public sealed class OpenAiDesignClient
 {
-    private readonly OpenAIResponseClient _responses;
+    private readonly OpenAiHttpClient _responses;
     private readonly string _designModel;
 
-    public OpenAiDesignClient(IConfiguration config)
+    public OpenAiDesignClient(IConfiguration config, OpenAiHttpClient responses)
     {
-        var apiKey = config["OpenAI:ApiKey"]
-            ?? throw new InvalidOperationException("Missing OpenAI:ApiKey");
-
-        _designModel = config["OpenAI:Model"] ?? "gpt-4.1";
-
-        _responses = new OpenAIResponseClient(
-            model: _designModel,
-            apiKey: apiKey);
+        _designModel = config[""OpenAI:Model""] ?? ""gpt-4.1"";
+        _responses = responses;
     }
 
     /// <summary>
@@ -32,73 +25,41 @@ public sealed class OpenAiDesignClient
         int populationSize,
         CancellationToken ct)
     {
-        // Describe schema (simplified) – you can refine schema for more attributes.
-        var schema = new
+        var schemaExample = new
         {
-            type = "object",
-            properties = new
+            candidates = new[]
             {
-                candidates = new
-                {
-                    type = "array",
-                    items = new
-                    {
-                        type = "object",
-                        properties = new
-                        {
-                            name = new { type = "string" },
-                            summary = new { type = "string" },
-                            layoutPattern = new { type = "string" },
-                            navigationPattern = new { type = "string" },
-                            colorPalette = new { type = "string" },
-                            typographyScale = new { type = "string" },
-                            componentLibraryStyle = new { type = "string" },
-                            interactionNotes = new { type = "string" },
-                            accessibilityNotes = new { type = "string" }
-                        },
-                        required = new[] {
-                            "name","summary","layoutPattern","navigationPattern",
-                            "colorPalette","typographyScale","componentLibraryStyle",
-                            "interactionNotes","accessibilityNotes"
-                        }
-                    }
+                new {
+                    name = """",
+                    summary = """",
+                    layoutPattern = """",
+                    navigationPattern = """",
+                    colorPalette = """",
+                    typographyScale = """",
+                    componentLibraryStyle = """",
+                    interactionNotes = """",
+                    accessibilityNotes = """"
                 }
-            },
-            required = new[] { "candidates" }
-        };
-
-        var options = new ResponseCreationOptions
-        {
-            TextOutput = new ResponseTextOutputOptions
-            {
-                Format = ResponseTextFormat.CreateJsonSchemaFormat(
-                    name: "uiux_population",
-                    schema: BinaryData.FromObjectAsJson(schema),
-                    isStrict: true)
             }
         };
 
         string prompt =
-            $"You are a senior UI/UX designer. Generate {populationSize} distinct, " +
-            $"high-quality UI/UX layout concepts for this problem:\n\n" +
-            $"Problem: {config.ProblemStatement}\n" +
-            $"Target platform: {config.TargetPlatform}\n" +
-            $"Brand tone: {config.BrandTone}\n\n" +
-            "Focus on diversity of layout patterns, navigation, and visual styles " +
-            "to maximize design space exploration.";
+            $""You are a senior UI/UX designer. Generate {populationSize} distinct, "" +
+            $""high-quality UI/UX layout concepts for this problem. Return a single JSON object with a 'candidates' array that matches the schema example.\n\n"" +
+            $""Schema example: {JsonSerializer.Serialize(schemaExample)}\n\n"" +
+            $""Problem: {config.ProblemStatement}\n"" +
+            $""Target platform: {config.TargetPlatform}\n"" +
+            $""Brand tone: {config.BrandTone}\n\n"" +
+            ""Focus on diversity of layout patterns, navigation, and visual styles to maximize design space exploration."";
 
-        var response = await _responses.CreateResponseAsync(
-            userInputText: prompt,
-            options,
-            cancellationToken: ct);
+        var json = await _responses.CreateTextResponseAsync(prompt, ct);
 
-        // Response should contain a single JSON blob that matches the schema
-        var json = response.OutputText; // library exposes OutputText for simple cases
         if (string.IsNullOrWhiteSpace(json))
-            throw new InvalidOperationException("OpenAI returned empty design population.");
+            throw new InvalidOperationException(""OpenAI returned empty design population."");
 
-        var parsed = System.Text.Json.JsonDocument.Parse(json);
-        var root = parsed.RootElement.GetProperty("candidates");
+        using var parsed = JsonDocument.Parse(json);
+        if (!parsed.RootElement.TryGetProperty(""candidates"", out var root))
+            throw new InvalidOperationException(""OpenAI returned JSON that doesn't contain 'candidates'."");
 
         var list = new List<UiUxDesignCandidate>(populationSize);
         int i = 0;
@@ -106,20 +67,20 @@ public sealed class OpenAiDesignClient
         {
             var spec = new UiUxDesignSpec
             {
-                LayoutPattern = item.GetProperty("layoutPattern").GetString()!,
-                NavigationPattern = item.GetProperty("navigationPattern").GetString()!,
-                ColorPalette = item.GetProperty("colorPalette").GetString()!,
-                TypographyScale = item.GetProperty("typographyScale").GetString()!,
-                ComponentLibraryStyle = item.GetProperty("componentLibraryStyle").GetString()!,
-                InteractionNotes = item.GetProperty("interactionNotes").GetString()!,
-                AccessibilityNotes = item.GetProperty("accessibilityNotes").GetString()!
+                LayoutPattern = item.GetProperty(""layoutPattern"").GetString() ?? string.Empty,
+                NavigationPattern = item.GetProperty(""navigationPattern"").GetString() ?? string.Empty,
+                ColorPalette = item.GetProperty(""colorPalette"").GetString() ?? string.Empty,
+                TypographyScale = item.GetProperty(""typographyScale"").GetString() ?? string.Empty,
+                ComponentLibraryStyle = item.GetProperty(""componentLibraryStyle"").GetString() ?? string.Empty,
+                InteractionNotes = item.GetProperty(""interactionNotes"").GetString() ?? string.Empty,
+                AccessibilityNotes = item.GetProperty(""accessibilityNotes"").GetString() ?? string.Empty
             };
 
             list.Add(new UiUxDesignCandidate
             {
-                Id = $"gen{generationIndex}-cand{i:000}",
-                Name = item.GetProperty("name").GetString() ?? $"Concept {i + 1}",
-                Summary = item.GetProperty("summary").GetString() ?? string.Empty,
+                Id = $""gen{generationIndex}-cand{i:000}"",
+                Name = item.GetProperty(""name"").GetString() ?? $""Concept {i + 1}"",
+                Summary = item.GetProperty(""summary"").GetString() ?? string.Empty,
                 Spec = spec,
                 SourcePrompt = prompt
             });
@@ -138,7 +99,6 @@ public sealed class OpenAiDesignClient
         UiUxResearchConfig config,
         CancellationToken ct)
     {
-        // Compress candidate specs to reduce tokens.
         var compact = candidates.Select(c => new
         {
             c.Id,
@@ -154,49 +114,41 @@ public sealed class OpenAiDesignClient
         });
 
         string prompt =
-            "You are evaluating multiple UI/UX design concepts for the same product.\n" +
-            "For each candidate, score on:\n" +
-            "- usability (0–10)\n" +
-            "- accessibility (0–10)\n" +
-            "- visual clarity (0–10)\n" +
-            "- implementation complexity (0–10, lower is better)\n\n" +
-            "Return JSON with an array 'scores' where each item has:\n" +
-            "{ id, usability, accessibility, visual_clarity, implementation_complexity, rationale }.\n\n" +
-            "Context:\n" +
-            $"Problem: {config.ProblemStatement}\n" +
-            $"Target platform: {config.TargetPlatform}\n" +
-            $"Brand tone: {config.BrandTone}\n\n" +
-            "Candidates:\n" +
-            System.Text.Json.JsonSerializer.Serialize(compact);
+            ""You are evaluating multiple UI/UX design concepts for the same product.\n"" +
+            ""For each candidate, score on:\n"" +
+            ""- usability (0–10)\n"" +
+            ""- accessibility (0–10)\n"" +
+            ""- visual clarity (0–10)\n"" +
+            ""- implementation complexity (0–10, lower is better)\n\n"" +
+            ""Return JSON with an array 'scores' where each item has:\n"" +
+            ""{ id, usability, accessibility, visual_clarity, implementation_complexity, rationale }.\n\n"" +
+            ""Context:\n"" +
+            $""Problem: {config.ProblemStatement}\n"" +
+            $""Target platform: {config.TargetPlatform}\n"" +
+            $""Brand tone: {config.BrandTone}\n\n"" +
+            ""Candidates:\n"" +
+            JsonSerializer.Serialize(compact);
 
-        var options = new ResponseCreationOptions
-        {
-            TextOutput = new ResponseTextOutputOptions
-            {
-                Format = ResponseTextFormat.JsonObject
-            }
-        };
+        var json = await _responses.CreateTextResponseAsync(prompt, ct);
 
-        var response = await _responses.CreateResponseAsync(
-            userInputText: prompt,
-            options,
-            cancellationToken: ct);
+        if (string.IsNullOrWhiteSpace(json))
+            throw new InvalidOperationException(""OpenAI returned empty scoring response."");
 
-        var json = response.OutputText!;
-        var doc = System.Text.Json.JsonDocument.Parse(json);
-        var scores = doc.RootElement.GetProperty("scores");
+        using var doc = JsonDocument.Parse(json);
+        if (!doc.RootElement.TryGetProperty(""scores"", out var scores))
+            throw new InvalidOperationException(""Scoring response missing 'scores' array."");
 
         var byId = candidates.ToDictionary(c => c.Id, c => c);
         foreach (var s in scores.EnumerateArray())
         {
-            var id = s.GetProperty("id").GetString();
+            var id = s.GetProperty(""id"").GetString();
             if (id is null || !byId.TryGetValue(id, out var cand)) continue;
 
-            cand.UsabilityScore = s.GetProperty("usability").GetDouble();
-            cand.AccessibilityScore = s.GetProperty("accessibility").GetDouble();
-            cand.VisualClarityScore = s.GetProperty("visual_clarity").GetDouble();
-            cand.ImplementationComplexityScore = s.GetProperty("implementation_complexity").GetDouble();
-            cand.EvaluationRationale = s.GetProperty("rationale").GetString();
+            if (s.TryGetProperty(""usability"", out var u)) cand.UsabilityScore = u.GetDouble();
+            if (s.TryGetProperty(""accessibility"", out var a)) cand.AccessibilityScore = a.GetDouble();
+            if (s.TryGetProperty(""visual_clarity"", out var v)) cand.VisualClarityScore = v.GetDouble();
+            if (s.TryGetProperty(""implementation_complexity"", out var ic)) cand.ImplementationComplexityScore = ic.GetDouble();
+            if (s.TryGetProperty(""rationale"", out var r)) cand.EvaluationRationale = r.GetString();
         }
     }
 }
